@@ -59,10 +59,16 @@ jobs:
           echo "🛑 Stopping and removing old container..."
           ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && docker-compose stop partners_app && docker-compose rm -f partners_app || true"
 
-          echo "🧹 Cleaning up Docker networks..."
-          ssh $FREMONT2_USER@$FREMONT2_HOST "docker network prune -f"
+          echo "🧹 Cleaning up Docker networks and orphaned resources..."
+          ssh $FREMONT2_USER@$FREMONT2_HOST "docker network prune -f || true"
 
-          echo "⏳ Waiting for network cleanup..."
+          echo "🔍 Checking for orphaned docker-proxy processes..."
+          ssh $FREMONT2_USER@$FREMONT2_HOST "sudo pkill -9 -f 'docker-proxy.*8083' || true"
+
+          echo "🧹 Cleaning up iptables rules..."
+          ssh $FREMONT2_USER@$FREMONT2_HOST "sudo iptables -t nat -L DOCKER -n --line-numbers | grep 8083 | awk '{print \$1}' | tac | xargs -r -I {} sudo iptables -t nat -D DOCKER {} || true"
+
+          echo "⏳ Waiting for cleanup to complete..."
           sleep 5
 
           echo "🔄 Starting new container..."
