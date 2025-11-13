@@ -59,6 +59,12 @@ jobs:
           echo "🛑 Stopping and removing old container..."
           ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && docker-compose stop partners_app && docker-compose rm -f partners_app || true"
 
+          echo "🧹 Cleaning up Docker networks..."
+          ssh $FREMONT2_USER@$FREMONT2_HOST "docker network prune -f"
+
+          echo "⏳ Waiting for network cleanup..."
+          sleep 5
+
           echo "🔄 Starting new container..."
           ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && docker-compose up -d partners_app"
 
