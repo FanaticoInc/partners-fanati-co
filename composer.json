@@ -1,0 +1,22 @@
+{
+    "name": "fanatico/partners-portal",
+    "description": "Fanatico Partners Portal - Laravel Application",
+    "keywords": ["fanatico", "partners", "mlm", "laravel"],
+    "license": "proprietary",
+    "type": "project",
+    "require": {
+        "php": "^8.1"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
