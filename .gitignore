@@ -85,3 +85,6 @@ Thumbs.db
 /public/uploads/
 /storage/app/public/
 /storage/debugbar/
+
+# Old application files
+/hybridmlm/
