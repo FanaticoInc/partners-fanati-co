@@ -34,3 +34,8 @@ requirements:
 
 
 
+1. the partners.fanati.co repo (https://github.com/fanaticodev/partners-fanati-co) will contain two repos:
+1.1. Infinite MLM accessbile at partners.fanati.co
+1.2. Hybrid MLM accessible at partners.fanati.co:port or partners.fanati.co/legacy
+
+2. proceed to create the Monorepo for Infinite and Hybrid MLM using https://github.com/fanaticodev/partners-fanati-co

@@ -26,7 +26,7 @@ RUN a2enmod rewrite headers
 WORKDIR /var/www/html
 
 # Copy application files
-COPY ./public_html/fanatics /var/www/html
+COPY ./hybridmlm/public_html/fanatics /var/www/html
 
 # Configure Apache
 RUN echo '<VirtualHost *:80>\n\

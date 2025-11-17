@@ -1,0 +1,97 @@
+version: '3.8'
+
+# Sandbox-specific overrides for development
+services:
+  # ============================================
+  # Infinite MLM Software (Primary)
+  # ============================================
+  infinite-mlm:
+    environment:
+      - APP_ENV=sandbox
+      - APP_DEBUG=true
+      - APP_URL=http://sandbox.partners.fanati.co
+      - DB_HOST=infinite-mlm-db
+      - DB_PORT=3306
+      - DB_DATABASE=infinite_mlm_sandbox
+      - DB_USERNAME=${INFINITE_DB_USER:-infinite_user}
+      - DB_PASSWORD=${INFINITE_DB_PASSWORD:-infinitepass2024}
+    volumes:
+      # Mount source code for live editing
+      - ./infinite-mlm/src:/var/www/html:cached
+      - infinite-storage:/var/www/html/storage
+      - infinite-cache:/var/www/html/bootstrap/cache
+    labels:
+      - "traefik.enable=false"  # Disable in case traefik is used
+
+  infinite-mlm-db:
+    environment:
+      - MYSQL_DATABASE=infinite_mlm_sandbox
+      - MYSQL_USER=${INFINITE_DB_USER:-infinite_user}
+      - MYSQL_PASSWORD=${INFINITE_DB_PASSWORD:-infinitepass2024}
+      - MYSQL_ROOT_PASSWORD=${INFINITE_DB_ROOT_PASSWORD:-rootpass2024}
+
+  # ============================================
+  # HybridMLM (Legacy)
+  # ============================================
+  hybrid-mlm:
+    environment:
+      - APP_ENV=sandbox
+      - APP_DEBUG=true
+      - APP_URL=http://sandbox.partners.fanati.co/legacy
+      - DB_HOST=hybrid-mlm-db
+      - DB_PORT=3306
+      - DB_DATABASE=hybrid_mlm_sandbox
+      - DB_USERNAME=${HYBRID_DB_USER:-hybrid_user}
+      - DB_PASSWORD=${HYBRID_DB_PASSWORD:-hybridpass2024}
+    volumes:
+      # Mount source code for live editing
+      - ./hybrid-mlm/hybridmlm/public_html:/var/www/html:cached
+      - hybrid-storage:/var/www/html/storage
+
+  hybrid-mlm-db:
+    environment:
+      - MYSQL_DATABASE=hybrid_mlm_sandbox
+      - MYSQL_USER=${HYBRID_DB_USER:-hybrid_user}
+      - MYSQL_PASSWORD=${HYBRID_DB_PASSWORD:-hybridpass2024}
+      - MYSQL_ROOT_PASSWORD=${HYBRID_DB_ROOT_PASSWORD:-rootpass2024}
+
+  # ============================================
+  # Nginx Reverse Proxy
+  # ============================================
+  nginx-router:
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # Add log volumes for debugging
+      - ./logs/nginx:/var/log/nginx
+
+  # ============================================
+  # Redis Cache (Shared)
+  # ============================================
+  redis:
+    command: redis-server --appendonly yes --loglevel debug
+
+  # ============================================
+  # Optional: PHPMyAdmin for Database Management
+  # ============================================
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: partners-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8087:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=infinite-mlm-db,hybrid-mlm-db
+      - PMA_VERBOSE=Infinite MLM DB,Hybrid MLM DB
+      - UPLOAD_LIMIT=100M
+    networks:
+      - partners-network
+    depends_on:
+      - infinite-mlm-db
+      - hybrid-mlm-db
+
+# Development volumes
+volumes:
+  logs:
+    driver: local

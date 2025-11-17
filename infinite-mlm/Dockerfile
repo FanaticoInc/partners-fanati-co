@@ -45,6 +45,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Create necessary directories
+RUN mkdir -p /var/log/supervisor /var/run
+
 EXPOSE 80
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
