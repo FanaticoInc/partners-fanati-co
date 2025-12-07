@@ -1,0 +1,38 @@
+# Gitleaks configuration for Partners.fanati.co (PHP)
+
+title = "Partners Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "mysql-password"
+description = "MySQL/MariaDB Password"
+regex = '''(?i)(mysql[_-]?password|db[_-]?password|database[_-]?password)\s*[=:]\s*['"]?([^\s'"]{8,})['"]?'''
+tags = ["database", "mysql"]
+
+[[rules]]
+id = "php-database-dsn"
+description = "PHP Database DSN"
+regex = '''mysql:host=[^;]+;dbname=[^;]+.*password=([^;'"]+)'''
+tags = ["database", "php"]
+
+[[rules]]
+id = "laravel-app-key"
+description = "Laravel APP_KEY"
+regex = '''APP_KEY\s*=\s*base64:([A-Za-z0-9+/=]{43,})'''
+tags = ["laravel", "encryption"]
+
+[allowlist]
+description = "Global allowlist"
+paths = [
+  '''\.env\.example$''',
+  '''vendor/''',
+  '''node_modules/''',
+  '''\.lock$''',
+]
+regexes = [
+  '''your[_-]?(password|secret)''',
+  '''<[A-Z_]+>''',
+  '''localhost''',
+]
