@@ -17,14 +17,47 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Gitleaks
+        run: |
+          GITLEAKS_VERSION="8.21.2"
+          wget -q "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf "gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          chmod +x gitleaks
+          sudo mv gitleaks /usr/local/bin/
 
-      - name: Upload SARIF
+      - name: Run Gitleaks Scan
+        id: gitleaks
+        run: |
+          if [ -f ".gitleaks.toml" ]; then
+            CONFIG_FLAG="--config=.gitleaks.toml"
+          else
+            CONFIG_FLAG=""
+          fi
+
+          gitleaks detect --source . $CONFIG_FLAG --report-format sarif --report-path gitleaks-results.sarif --verbose || EXIT_CODE=$?
+
+          if [ "${EXIT_CODE:-0}" -eq 1 ]; then
+            echo "🚨 Secrets detected!"
+            exit 1
+          else
+            echo "✅ No secrets detected"
+          fi
+
+      - name: Upload SARIF results
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results.sarif
+          sarif_file: gitleaks-results.sarif
         continue-on-error: true
+
+      - name: Comment on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚨 **Gitleaks Secret Scan Failed**\n\nPotential secrets were detected. Please review the workflow logs.'
+            });
