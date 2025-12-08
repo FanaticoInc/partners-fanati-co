@@ -1,7 +1,10 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 # CodeRabbit Configuration for Partners.fanati.co
 # AI-powered code reviews for PHP MLM platform
 
 language: "en-US"
+
+tone_instructions: "This is an MLM platform with PHP backend. Focus on financial calculations accuracy, SQL injection prevention, authentication security, and input validation."
 
 reviews:
   high_level_summary: true
@@ -12,39 +15,18 @@ reviews:
     - "!**/vendor/**"
     - "!**/node_modules/**"
     - "!**/storage/**"
-
-auto_review:
-  enabled: true
-  drafts: false
-  base_branches:
-    - main
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+  path_instructions:
+    - path: "hybrid-mlm/**/Modules/**"
+      instructions: "MLM modules - verify commission calculations, tree operations, and financial logic are correct."
+    - path: "**/*.php"
+      instructions: "PHP code - check for SQL injection, XSS, CSRF vulnerabilities."
+    - path: "**/docker-compose*.yml"
+      instructions: "Docker configuration - verify database credentials are using environment variables."
 
 chat:
   auto_reply: true
-
-instructions:
-  custom: |
-    This is an MLM (Multi-Level Marketing) platform with PHP backend.
-
-    Critical review areas:
-    - Financial calculations (commissions, bonuses, payouts)
-    - SQL injection prevention
-    - Authentication and authorization
-    - Session security
-    - Input validation and sanitization
-
-    MLM-specific concerns:
-    - Binary tree structure integrity
-    - Commission calculation accuracy
-    - User hierarchy traversal efficiency
-    - Token management (FCO Tokens module)
-
-path_instructions:
-  - path: "hybrid-mlm/**/Modules/**"
-    instructions: "MLM modules - verify commission calculations, tree operations, and financial logic are correct."
-
-  - path: "**/*.php"
-    instructions: "PHP code - check for SQL injection, XSS, CSRF vulnerabilities."
-
-  - path: "**/docker-compose*.yml"
-    instructions: "Docker configuration - verify database credentials are using environment variables."
