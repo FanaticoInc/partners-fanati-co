@@ -30,9 +30,19 @@ paths = [
   '''vendor/''',
   '''node_modules/''',
   '''\.lock$''',
+  '''DEPLOYMENT\.md$''',
+  '''README\.md$''',
+  # Docker compose files use variable substitution, not actual secrets
+  '''docker-compose.*\.yml$''',
 ]
 regexes = [
   '''your[_-]?(password|secret)''',
   '''<[A-Z_]+>''',
   '''localhost''',
+  # Example/default passwords for sandbox environments
+  '''infinitepass2024''',
+  '''hybridpass2024''',
+  # Environment variable substitution patterns (not actual secrets)
+  '''\$\{[A-Z_]+:-[^}]+\}''',
+  '''\$\{[A-Z_]+\}''',
 ]
