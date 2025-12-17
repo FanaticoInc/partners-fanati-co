@@ -110,22 +110,24 @@ jobs:
             echo "📦 Deploying Infinite MLM..."
             ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && \
               docker-compose build infinite-mlm && \
-              docker-compose up -d --force-recreate --no-deps infinite-mlm && \
-              docker-compose up -d infinite-mlm-db"
+              docker-compose stop infinite-mlm || true && \
+              docker-compose rm -f infinite-mlm || true && \
+              docker-compose up -d infinite-mlm infinite-mlm-db"
           fi
 
           if [ "$DEPLOY_TARGET" = "both" ] || [ "$DEPLOY_TARGET" = "hybrid-mlm" ]; then
             echo "📦 Deploying Hybrid MLM..."
             ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && \
               docker-compose build hybrid-mlm && \
-              docker-compose up -d --force-recreate --no-deps hybrid-mlm && \
-              docker-compose up -d hybrid-mlm-db"
+              docker-compose stop hybrid-mlm || true && \
+              docker-compose rm -f hybrid-mlm || true && \
+              docker-compose up -d hybrid-mlm hybrid-mlm-db"
           fi
 
           # Deploy nginx router
           echo "🔧 Updating Nginx configuration..."
           ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && \
-            docker-compose up -d --force-recreate nginx-router redis"
+            docker-compose up -d nginx-router redis"
 
           # Run migrations for Infinite MLM (if applicable)
           if [ "$DEPLOY_TARGET" = "both" ] || [ "$DEPLOY_TARGET" = "infinite-mlm" ]; then
