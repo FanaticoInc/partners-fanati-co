@@ -87,7 +87,10 @@ Thumbs.db
 /storage/debugbar/
 
 # MLM Monorepo specific
-/infinite-mlm/src/
+# Note: infinite-mlm/src/ contains placeholder until actual software is installed
+/infinite-mlm/src/*
+!/infinite-mlm/src/index.php
+!/infinite-mlm/src/health.php
 /hybrid-mlm/public_html/fanatics/
 *.sql
 *.dump
