@@ -125,7 +125,7 @@ jobs:
           # Deploy nginx router and redis
           echo "🔧 Updating Nginx and Redis..."
           ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && \
-            docker rm -f nginx-router redis 2>/dev/null || true && \
+            docker rm -f nginx-router redis partners-nginx partners-redis 2>/dev/null || true && \
             docker-compose up -d nginx-router redis"
 
           # Run migrations for Infinite MLM (if applicable)
