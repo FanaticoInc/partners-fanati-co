@@ -158,7 +158,7 @@ jobs:
           echo "✅ Health checks completed!"
 
       - name: Notify Deployment
-        if: success()
+        if: success() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
@@ -168,6 +168,10 @@ jobs:
               repo: context.repo.repo,
               body: '✅ Deployment successful!\n\n- Infinite MLM: https://partners.fanati.co\n- Hybrid MLM: https://partners.fanati.co/legacy'
             })
+
+      - name: Log Deployment Success
+        if: success()
+        run: echo "🎉 Deployment to partners.fanati.co completed successfully!"
 
       - name: Rollback on Failure
         if: failure()
