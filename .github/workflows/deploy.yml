@@ -110,8 +110,8 @@ jobs:
             echo "📦 Deploying Infinite MLM..."
             ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && \
               docker-compose build infinite-mlm && \
-              docker-compose stop infinite-mlm || true && \
-              docker-compose rm -f infinite-mlm || true && \
+              docker-compose stop infinite-mlm infinite-mlm-db || true && \
+              docker-compose rm -f infinite-mlm infinite-mlm-db || true && \
               docker-compose up -d infinite-mlm infinite-mlm-db"
           fi
 
@@ -119,14 +119,16 @@ jobs:
             echo "📦 Deploying Hybrid MLM..."
             ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && \
               docker-compose build hybrid-mlm && \
-              docker-compose stop hybrid-mlm || true && \
-              docker-compose rm -f hybrid-mlm || true && \
+              docker-compose stop hybrid-mlm hybrid-mlm-db || true && \
+              docker-compose rm -f hybrid-mlm hybrid-mlm-db || true && \
               docker-compose up -d hybrid-mlm hybrid-mlm-db"
           fi
 
-          # Deploy nginx router
-          echo "🔧 Updating Nginx configuration..."
+          # Deploy nginx router and redis
+          echo "🔧 Updating Nginx and Redis..."
           ssh $FREMONT2_USER@$FREMONT2_HOST "cd /home/sebastian/sites/partners.fanati.co && \
+            docker-compose stop nginx-router redis || true && \
+            docker-compose rm -f nginx-router redis || true && \
             docker-compose up -d nginx-router redis"
 
           # Run migrations for Infinite MLM (if applicable)
